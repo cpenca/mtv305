@@ -517,130 +517,103 @@
     </div>
   </div>
 
-  <script>
-    /***************
-     * 1) PUT YOUR WEB APP URL HERE
-     ***************/
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tl6AvOXxHYuAmo44v18VkFzX66i_SJrTgGkkgGFOhbPpUMrIshfwvavinA8wwW6q/exec";
+ <script>
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tl6AvOXxHYuAmo44v18VkFzX66i_SJrTgGkkgGFOhbPpUMrIshfwvavinA8wwW6q/exec";
 
-    /***************
-     * Modal controls
-     ***************/
-    const openBtn = document.getElementById('openSignup');
-    const backdrop = document.getElementById('modalBackdrop');
-    const closeBtn = document.getElementById('closeModal');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const form = document.getElementById('signupForm');
-    const statusBox = document.getElementById('formStatus');
-    const submitBtn = document.getElementById('submitBtn');
+  const openBtn = document.getElementById('openSignup');
+  const backdrop = document.getElementById('modalBackdrop');
+  const closeBtn = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const form = document.getElementById('signupForm');
+  const statusBox = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('submitBtn');
 
-    function openModal(){
-      backdrop.classList.add('show');
-      backdrop.setAttribute('aria-hidden','false');
-      // focus first input
-      setTimeout(() => form.querySelector('input[name="name"]').focus(), 0);
-      // clear status
-      setStatus('', '');
-      // prevent background scroll
-      document.body.style.overflow = 'hidden';
+  function setStatus(type, msg){
+    statusBox.className = 'status' + (type ? (' show ' + type) : '');
+    statusBox.textContent = msg || '';
+  }
+
+  function openModal(){
+    backdrop.classList.add('show');
+    backdrop.setAttribute('aria-hidden','false');
+    setStatus('', '');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => form.querySelector('input[name="name"]').focus(), 0);
+  }
+
+  function closeModal(){
+    backdrop.classList.remove('show');
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && backdrop.classList.contains('show')) closeModal();
+  });
+
+  const faq = document.getElementById('faq');
+  faq.addEventListener('toggle', (e) => {
+    if (!(e.target instanceof HTMLDetailsElement)) return;
+    if (e.target.open) {
+      faq.querySelectorAll('details').forEach(d => {
+        if (d !== e.target) d.open = false;
+      });
     }
+  }, true);
 
-    function closeModal(){
-      backdrop.classList.remove('show');
-      backdrop.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    function setStatus(type, msg){
-      statusBox.className = 'status' + (type ? (' show ' + type) : '');
-      statusBox.textContent = msg || '';
-    }
+    const formData = new FormData(form);
+    const payload = {
+      name: (formData.get('name') || '').toString().trim(),
+      email: (formData.get('email') || '').toString().trim(),
+      phone: (formData.get('phone') || '').toString().trim(),
+      songTitle: (formData.get('songTitle') || '').toString().trim(),
+      artist: (formData.get('artist') || '').toString().trim(),
+      source: "website modal",
+      userAgent: navigator.userAgent
+    };
 
-    openBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // close if clicking outside modal
-    backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) closeModal();
-    });
-
-    // close on escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && backdrop.classList.contains('show')) closeModal();
-    });
-
-    /***************
-     * FAQ accordion: one open at a time
-     ***************/
-    const faq = document.getElementById('faq');
-    faq.addEventListener('toggle', (e) => {
-      if (!(e.target instanceof HTMLDetailsElement)) return;
-      if (e.target.open) {
-        faq.querySelectorAll('details').forEach(d => {
-          if (d !== e.target) d.open = false;
-        });
+    for (const k of ["name","email","phone","songTitle","artist"]) {
+      if (!payload[k]) {
+        setStatus('err', 'Please fill out all fields.');
+        return;
       }
-    }, true);
-
-    /***************
-     * Form submit -> POST to Apps Script
-     ***************/
-    form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  if (!WEB_APP_URL || WEB_APP_URL.includes("PASTE_YOUR")) {
-    setStatus('err', 'Missing WEB_APP_URL. Paste your Google Apps Script Web App URL into the code.');
-    return;
-  }
-
-  const formData = new FormData(form);
-  const payload = {
-    name: (formData.get('name') || '').toString().trim(),
-    email: (formData.get('email') || '').toString().trim(),
-    phone: (formData.get('phone') || '').toString().trim(),
-    songTitle: (formData.get('songTitle') || '').toString().trim(),
-    artist: (formData.get('artist') || '').toString().trim(),
-    source: "website modal",
-    userAgent: navigator.userAgent
-  };
-
-  for (const k of ["name","email","phone","songTitle","artist"]) {
-    if (!payload[k]) {
-      setStatus('err', 'Please fill out all fields.');
-      return;
     }
-  }
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Submitting…";
-  setStatus('', '');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+    setStatus('', '');
 
-  try {
-    // no-cors prevents the browser from blocking the request due to missing CORS headers.
-    // You won't be able to read the response, so treat success as "sent".
-    await fetch(WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      await fetch(WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
 
-    setStatus('ok', "✅ Submitted. You’re in.");
-    form.reset();
-    setTimeout(closeModal, 900);
+      setStatus('ok', "✅ Submitted. You’re in.");
+      form.reset();
+      setTimeout(closeModal, 900);
+    } catch (err) {
+      setStatus('err', "❌ Submission failed. Check the Web App deployment settings.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+    }
+  });
 
-  } catch (err) {
-    setStatus('err', "❌ Still blocked. Double-check your Web App URL ends with /exec and is deployed to Anyone.");
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Submit";
-  }
-});
-  
-
-    // Footer year
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
