@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -13,10 +12,13 @@
       --panel-2: rgba(255,255,255,.10);
       --ink: rgba(255,255,255,.92);
       --ink-soft: rgba(255,255,255,.75);
+      --ink-faint: rgba(255,255,255,.55);
       --border: rgba(255,255,255,.18);
       --shadow: 0 20px 60px rgba(0,0,0,.35);
       --radius: 18px;
       --maxw: 920px;
+      --danger: rgba(255,120,120,.95);
+      --ok: rgba(120,255,210,.95);
     }
 
     *{ box-sizing: border-box; }
@@ -114,9 +116,7 @@
       backdrop-filter: blur(10px);
     }
 
-    .accordion{
-      display:grid;
-    }
+    .accordion{ display:grid; }
 
     details{
       border-top: 1px solid rgba(255,255,255,.10);
@@ -197,6 +197,112 @@
       color: rgba(255,255,255,.70);
     }
 
+    /* ===== Modal ===== */
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
+    }
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width: min(640px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    .modal-head{
+      padding: 16px 18px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .modal-title{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .icon-btn{
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color: var(--ink);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      cursor:pointer;
+    }
+    .icon-btn:hover{ background: rgba(255,255,255,.10); }
+
+    .modal-body{ padding: 16px 18px 18px; }
+
+    form{
+      display:grid;
+      gap: 12px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 560px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:grid;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,.75);
+    }
+    input{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--ink);
+      outline: none;
+    }
+    input::placeholder{ color: rgba(255,255,255,.45); }
+    input:focus{ border-color: rgba(255,255,255,.32); background: rgba(0,0,0,.22); }
+
+    .hint{
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      margin-top: -6px;
+    }
+
+    .status{
+      display:none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.80);
+      font-size: 13px;
+    }
+    .status.show{ display:block; }
+    .status.ok{ border-color: rgba(120,255,210,.35); color: rgba(220,255,245,.95); }
+    .status.err{ border-color: rgba(255,120,120,.35); color: rgba(255,220,220,.95); }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      align-items:center;
+      margin-top: 4px;
+    }
+
     @media (prefers-reduced-motion: reduce){
       .btn, .chev { transition: none; }
       .btn:hover { transform: none; }
@@ -216,8 +322,7 @@
       </p>
 
       <div class="cta">
-        <!-- Replace # with your signup form link (Google Form, Typeform, etc.) -->
-        <a class="btn" href="#" target="_blank" rel="noopener">🚀 Sign up!</a>
+        <button class="btn" id="openSignup" type="button">🚀 Sign up!</button>
       </div>
     </header>
 
@@ -233,7 +338,6 @@
               You are making a music video using archival/public domain/found footage.
               Some resources include Archive.org, Wolfson Archives, etc.
               Once everyone has completed their videos we will host a premiere to share our creations with friends and lovers.
-  
             </p>
           </div>
         </details>
@@ -248,10 +352,10 @@
               Download the video clips and drop them into a video editor (iMovie, DaVinci Resolve, etc).
               Then play around with things like speed, transitions, direction, and other effects. Have fun with it.
               Save the file as <strong>MP4</strong> or <strong>MOV</strong> (prefer MP4).
-
-              You can find video clips from the  <a href="https://www.mdc.edu/archives/wolfson-archives/wolfson_archives_search.aspx">Wolfson archive</a>
-              or from <a href="https://www.floridamemory.com/discover/video/">Florida Memory: The State Library and Archives of Florida</a>
-              or from <a href="https://archive.org/details/movies">Archive.org</a>
+              You can find video clips from the
+              <a href="https://www.mdc.edu/archives/wolfson-archives/wolfson_archives_search.aspx" target="_blank" rel="noopener">Wolfson archive</a>,
+              <a href="https://www.floridamemory.com/discover/video/" target="_blank" rel="noopener">Florida Memory</a>,
+              or <a href="https://archive.org/details/movies" target="_blank" rel="noopener">Archive.org</a>.
             </p>
           </div>
         </details>
@@ -270,7 +374,7 @@
           </div>
         </details>
 
-            <details>
+        <details>
           <summary>
             <span class="q">Can I use original footage, or must it be archive/public domain material?</span>
             <span class="chev" aria-hidden="true">⌄</span>
@@ -348,9 +452,7 @@
             <span class="chev" aria-hidden="true">⌄</span>
           </summary>
           <div class="a">
-            <p>
-              Yes
-            </p>
+            <p>Yes</p>
           </div>
         </details>
       </div>
@@ -367,20 +469,111 @@
     </footer>
   </div>
 
-  <script>
-    // Expand/collapse controls
-    const faq = document.getElementById('faq');
-    const expandAllBtn = document.getElementById('expandAll');
-    const collapseAllBtn = document.getElementById('collapseAll');
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 class="modal-title" id="modalTitle">Sign up</h2>
+        <button class="icon-btn" id="closeModal" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="status" id="formStatus"></div>
 
-    function setAll(open) {
-      faq.querySelectorAll('details').forEach(d => d.open = open);
+        <form id="signupForm" autocomplete="on">
+          <div class="grid">
+            <label>
+              Name
+              <input name="name" type="text" placeholder="Your name" required />
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" placeholder="name@email.com" required />
+            </label>
+          </div>
+
+          <label>
+            Phone (WhatsApp)
+            <input name="phone" type="tel" placeholder="+1 305 555 0123" required />
+          </label>
+          <div class="hint">Include country code if you can (like +1).</div>
+
+          <div class="grid">
+            <label>
+              Song title
+              <input name="songTitle" type="text" placeholder="Song title" required />
+            </label>
+            <label>
+              Artist
+              <input name="artist" type="text" placeholder="Artist" required />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="btn secondary" id="cancelBtn" type="button">Cancel</button>
+            <button class="btn" id="submitBtn" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***************
+     * 1) PUT YOUR WEB APP URL HERE
+     ***************/
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqkhO9bnVsNiOv7asOsn9vcP_CG3DsbepQp4heMJwA7JA-U3x-Td9YiXVQIGNCt7--/exec";
+
+    /***************
+     * Modal controls
+     ***************/
+    const openBtn = document.getElementById('openSignup');
+    const backdrop = document.getElementById('modalBackdrop');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const form = document.getElementById('signupForm');
+    const statusBox = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function openModal(){
+      backdrop.classList.add('show');
+      backdrop.setAttribute('aria-hidden','false');
+      // focus first input
+      setTimeout(() => form.querySelector('input[name="name"]').focus(), 0);
+      // clear status
+      setStatus('', '');
+      // prevent background scroll
+      document.body.style.overflow = 'hidden';
     }
 
-    expandAllBtn.addEventListener('click', () => setAll(true));
-    collapseAllBtn.addEventListener('click', () => setAll(false));
+    function closeModal(){
+      backdrop.classList.remove('show');
+      backdrop.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
 
-    // Nice behavior: only one open at a time (comment out if you want multiple open)
+    function setStatus(type, msg){
+      statusBox.className = 'status' + (type ? (' show ' + type) : '');
+      statusBox.textContent = msg || '';
+    }
+
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // close if clicking outside modal
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+
+    // close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop.classList.contains('show')) closeModal();
+    });
+
+    /***************
+     * FAQ accordion: one open at a time
+     ***************/
+    const faq = document.getElementById('faq');
     faq.addEventListener('toggle', (e) => {
       if (!(e.target instanceof HTMLDetailsElement)) return;
       if (e.target.open) {
@@ -389,6 +582,69 @@
         });
       }
     }, true);
+
+    /***************
+     * Form submit -> POST to Apps Script
+     ***************/
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!WEB_APP_URL || WEB_APP_URL.includes("PASTE_YOUR")) {
+        setStatus('err', 'Missing WEB_APP_URL. Paste your Google Apps Script Web App URL into the code.');
+        return;
+      }
+
+      const formData = new FormData(form);
+      const payload = {
+        name: formData.get('name')?.toString().trim(),
+        email: formData.get('email')?.toString().trim(),
+        phone: formData.get('phone')?.toString().trim(),
+        songTitle: formData.get('songTitle')?.toString().trim(),
+        artist: formData.get('artist')?.toString().trim(),
+        source: "website modal",
+        userAgent: navigator.userAgent
+      };
+
+      // basic client-side validation
+      for (const k of ["name","email","phone","songTitle","artist"]) {
+        if (!payload[k]) {
+          setStatus('err', 'Please fill out all fields.');
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting…";
+      setStatus('', '');
+
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        // Apps Script often returns 200 even on errors; rely on JSON payload
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { data = { ok:false, error: text || "Unknown response" }; }
+
+        if (data.ok) {
+          setStatus('ok', "✅ Submitted. You’re in.");
+          form.reset();
+          // close after a beat
+          setTimeout(closeModal, 900);
+        } else {
+          setStatus('err', "❌ " + (data.error || "Submission failed."));
+        }
+
+      } catch (err) {
+        setStatus('err', "❌ Network error. Try again.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      }
+    });
 
     // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
